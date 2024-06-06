@@ -48,6 +48,7 @@ def print_s3_response(reply):
     """
     data = {'platform': 'aws', 'msg': '', 'target': '', 'access': ''}
 
+    reply.url = reply.url.replace('/foobar', '')
     if reply.status_code == 404:
         pass
     elif 'Bad Request' in reply.reason:
@@ -80,14 +81,14 @@ def check_s3_buckets(names, threads):
     print("[+] Checking for S3 buckets")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("S3 buckets")
 
     # Initialize the list of correctly formatted urls
     candidates = []
 
     # Take each mutated keyword craft a url with the correct format
     for name in names:
-        candidates.append(f'{name}.{S3_URL}')
+        candidates.append(f'{name}.{S3_URL}/foobar')
 
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(candidates, use_ssl=False,
@@ -95,7 +96,7 @@ def check_s3_buckets(names, threads):
                         threads=threads)
 
     # Stop the time
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "S3 buckets")
 
 
 def check_awsapps(names, threads, nameserver, nameserverfile=False):
@@ -104,11 +105,10 @@ def check_awsapps(names, threads, nameserver, nameserverfile=False):
     (ie. WorkDocs, WorkMail, Connect, etc.)
     """
     data = {'platform': 'aws', 'msg': 'AWS App Found:', 'target': '', 'access': ''}
-
     print("[+] Checking for AWS Apps")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("AWS Apps")
 
     # Initialize the list of domain names to look up
     candidates = []
@@ -130,7 +130,7 @@ def check_awsapps(names, threads, nameserver, nameserverfile=False):
         utils.fmt_output(data)
 
     # Stop the timer
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "AWS Apps")
 
 
 def run_all(names, args):
